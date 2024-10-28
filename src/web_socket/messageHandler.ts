@@ -7,13 +7,16 @@ import { PlayerRepository } from "../storage/playerRepository";
 import { RoomRepository } from "../storage/roomRepository";
 import GameService from "../shared/gameService";
 import { GameRepository } from "../storage/gameRepository";
+import GameHandler from "../handlers/gameHandler";
 
 class MessageHandler {
   messenger = new Messenger();
   playerRepository = new PlayerRepository();
   roomRepository = new RoomRepository();
+  gameRepository = new GameRepository();
   registrationHandler = new RegistrationHandler(this.playerRepository);
-  gameService = new GameService(new GameRepository());
+  gameService = new GameService(this.gameRepository);
+  gameHandler = new GameHandler(this.gameRepository, this.playerRepository);
   roomHandler = new RoomHandler(this.roomRepository, this.playerRepository, this.gameService);
 
   handleMessage(ws: WebSocket, message: string, clientId: string) {
@@ -35,8 +38,10 @@ class MessageHandler {
           this.roomHandler.addUserToRoom(ws, data, clientId);
           break;
         case MESSAGE_TYPES.ADD_SHIPS:
+          this.gameHandler.handleAddShips(ws, data);
           break;
         case MESSAGE_TYPES.ATTACK:
+          this.gameHandler.handleAttack(ws, data);
           break;
         default:
           this.messenger.sendError(ws, `Undefined message: ${msg}`, clientId, '')

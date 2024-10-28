@@ -38,7 +38,7 @@ export interface IGameData {
 
 export interface IMessage {
   type: string;
-  data: IUserData | IRoomData[] | IGameData;
+  data: IUserData | IRoomData[] | IGameData | any;
   id: number;
 }
 

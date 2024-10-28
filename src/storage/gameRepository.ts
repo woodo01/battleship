@@ -1,5 +1,3 @@
-import { Player } from "./playerRepository";
-
 export interface ShipInfo {
   position: { x: number; y: number };
   direction: boolean;
@@ -37,8 +35,8 @@ class GameRepository {
     return this.games.size > 0 ? Math.max(...Array.from(this.games.keys()).map((gameId) => parseInt(gameId))) : -1;
   }
 
-  findGame(roomIndex: string): Game|undefined {
-    return this.games.get(roomIndex);
+  findGame(gameIndex: string): Game|undefined {
+    return this.games.get(gameIndex);
   }
 
   addGame(players: string[]): Game {
