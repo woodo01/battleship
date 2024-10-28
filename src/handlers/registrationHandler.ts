@@ -4,8 +4,12 @@ import { Messenger } from "../shared/messenger";
 import { createMessage, MESSAGE_TYPES } from "../shared/message";
 
 class RegistrationHandler {
-  playerRepository = new PlayerRepository();
+  playerRepository: PlayerRepository;
   messenger = new Messenger();
+
+  constructor(playerRepository: PlayerRepository) {
+    this.playerRepository = playerRepository;
+  }
 
   updatePlayer(player: Player, ws: WebSocket, clientId: string) {
     player.ws = ws;

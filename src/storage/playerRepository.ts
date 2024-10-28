@@ -23,12 +23,16 @@ class PlayerRepository {
     return Array.from(this.players.values()).find((player) => player.name === playerName);
   }
 
-  addPlayer(userName: any, password: any, clientId: string, ws: WebSocket) {
+  findById(clientId: string): Player|undefined {
+    return this.players.get(clientId);
+  }
+
+  addPlayer(userName: string, password: string, clientId: string, ws: WebSocket) {
     this.players.set(clientId, new Player(userName, password, clientId, ws));
   }
 
   findAll() {
-    return this.players;
+    return Array.from(this.players.values());
   }
 }
 
