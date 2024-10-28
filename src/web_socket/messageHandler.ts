@@ -5,13 +5,16 @@ import { Messenger } from "../shared/messenger";
 import { RoomHandler } from "../handlers/roomHandler";
 import { PlayerRepository } from "../storage/playerRepository";
 import { RoomRepository } from "../storage/roomRepository";
+import GameService from "../shared/gameService";
+import { GameRepository } from "../storage/gameRepository";
 
 class MessageHandler {
   messenger = new Messenger();
   playerRepository = new PlayerRepository();
   roomRepository = new RoomRepository();
   registrationHandler = new RegistrationHandler(this.playerRepository);
-  roomHandler = new RoomHandler(this.roomRepository, this.playerRepository);
+  gameService = new GameService(new GameRepository());
+  roomHandler = new RoomHandler(this.roomRepository, this.playerRepository, this.gameService);
 
   handleMessage(ws: WebSocket, message: string, clientId: string) {
     const msg: IMessage = JSON.parse(message);

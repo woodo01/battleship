@@ -13,7 +13,6 @@ export class Messenger {
 
   sendBroadcastMessage(message: IMessage, players: Player[]) {
     for (const player of players) {
-      console.log("broadcastMessage", message, player.name);
       player.ws?.send(JSON.stringify({ ...message, data: JSON.stringify(message.data) }));
     }
   }

@@ -2,15 +2,18 @@ import { WebSocket } from 'ws';
 import { Room, RoomRepository } from "../storage/roomRepository";
 import { Messenger } from "../shared/messenger";
 import { PlayerRepository } from "../storage/playerRepository";
+import GameService from "../shared/gameService";
 
 class RoomHandler {
   messenger = new Messenger();
   roomRepository: RoomRepository;
   playerRepository: PlayerRepository;
+  gameService: GameService;
 
-  constructor(roomRepository: RoomRepository, playerRepository: PlayerRepository) {
+  constructor(roomRepository: RoomRepository, playerRepository: PlayerRepository, gameService: GameService) {
     this.roomRepository = roomRepository;
     this.playerRepository = playerRepository;
+    this.gameService = gameService;
   }
 
   createRoom(clientId: string) {
@@ -20,7 +23,7 @@ class RoomHandler {
   }
 
   addUserToRoom(ws: WebSocket, data: any, clientId: string) {
-    const { roomIndex } = JSON.parse(data);
+    const { indexRoom: roomIndex } = JSON.parse(data);
     const room = this.roomRepository.findRoom(roomIndex);
     if (!room || room.players.length >= 2) {
       this.messenger.sendError(ws, 'Room not available', clientId, '');
@@ -30,6 +33,34 @@ class RoomHandler {
 
     room.players.push(clientId);
     this.sendUpdateRoom();
+    this.startGame(room);
+  }
+
+  private startGame(room: Room) {
+    room.gameStarted = true;
+
+    const game = this.gameService.createNewGame(room.players);
+    const [playerId1, playerId2] = room.players;
+    const player1 = this.playerRepository.findById(playerId1);
+    const player2 = this.playerRepository.findById(playerId2);
+
+    player1?.ws ? this.messenger.sendMessage(player1.ws, {
+      type: 'create_game',
+      data: {
+        gameId: game.id,
+        playerId: playerId1,
+      },
+      id: 0,
+    }) : null;
+
+    player2?.ws ? this.messenger.sendMessage(player2.ws, {
+      type: 'create_game',
+      data: {
+        gameId: game.id,
+        playerId: playerId2,
+      },
+      id: 0,
+    }) : null;
   }
 
   private sendUpdateRoom() {
@@ -38,7 +69,7 @@ class RoomHandler {
       data: this.roomRepository.findAll()
         .filter((room) => room.players.length === 1)
         .map((room) => ({
-          roomId: room.roomId,
+          roomId: room.id,
           roomUsers: room.players.map((clientId) => {
             const player = this.playerRepository.findById(clientId);
             return {

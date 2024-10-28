@@ -1,10 +1,10 @@
 class Room {
-  roomId: string;
+  id: string;
   players: string[];
   gameStarted: boolean;
 
-  constructor(roomId: string) {
-    this.roomId = roomId;
+  constructor(id: string) {
+    this.id = id;
     this.players = [];
     this.gameStarted = false;
   }
@@ -23,7 +23,7 @@ class RoomRepository {
 
   addRoom(): Room {
     const room = new Room((this.getLastRoomId() + 1).toString());
-    this.rooms.set(room.roomId, room);
+    this.rooms.set(room.id, room);
     return room;
   }
 

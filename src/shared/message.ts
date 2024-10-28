@@ -31,13 +31,18 @@ export interface IRoomData {
   }[]
 }
 
+export interface IGameData {
+  gameId: string,
+  playerId: string,
+}
+
 export interface IMessage {
   type: string;
-  data: IUserData | IRoomData[];
+  data: IUserData | IRoomData[] | IGameData;
   id: number;
 }
 
-export const createMessageData = (overrides: Partial<IUserData>|Partial<IRoomData[]> = {}): IUserData => {
+export const createMessageData = (overrides: Partial<IUserData>|Partial<IRoomData[]>|Partial<IGameData> = {}): IUserData => {
   return {
     userName: 'Guest',
     clientId: '',
