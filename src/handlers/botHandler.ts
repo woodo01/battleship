@@ -1,7 +1,7 @@
 import { WebSocket } from 'ws';
 import { Messenger } from "../shared/messenger";
 import { Player, PlayerRepository } from "../storage/playerRepository";
-import { Game, GameRepository, PlayerInfo, ShipInfo } from "../storage/gameRepository";
+import { Game, PlayerInfo, ShipInfo } from "../storage/gameRepository";
 import { Room, RoomRepository } from "../storage/roomRepository";
 import GameService from "../shared/gameService";
 import ShipService from "../shared/shipService";
@@ -149,7 +149,7 @@ class BotHandler {
     }
 
     this.messenger.sendTurnMessage(game, this.playerRepository);
-    setTimeout(() => this.botMakeMove(game, game.currentTurn), 1300);
+    setTimeout(() => this.botMakeMove(game, game.currentTurn), 1000);
   }
 
   generateCoordinatesForAttack(data: PlayerInfo): { x: number; y: number } {

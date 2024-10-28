@@ -160,6 +160,7 @@ class GameHandler {
       game.currentTurn = opponentId;
     }
     this.messenger.sendTurnMessage(game, this.playerRepository);
+    this.setTurnTimer(game);
   }
 }
 

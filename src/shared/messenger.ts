@@ -56,7 +56,7 @@ export class Messenger {
 
   sendUpdateWinners(playerRepository: PlayerRepository) {
     const winnerList = playerRepository.findAll()
-      .filter((p) => !p.name.startsWith("_bot_"))
+      .filter((p) => !p.name.startsWith("bot-"))
       .sort((a, b) => b.wins - a.wins)
       .map((p) => ({ name: p.name, wins: p.wins }));
 

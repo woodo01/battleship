@@ -32,8 +32,8 @@ export interface IRoomData {
 }
 
 export interface IGameData {
-  gameId: string,
-  playerId: string,
+  idGame: string,
+  idPlayer: string,
 }
 
 export interface IMessage {

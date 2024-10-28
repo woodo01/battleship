@@ -40,6 +40,7 @@ class RoomHandler {
     room.gameStarted = true;
 
     const game = this.gameService.createNewGame(room.players);
+    console.log("New game created", game);
     const [playerId1, playerId2] = room.players;
     const player1 = this.playerRepository.findById(playerId1);
     const player2 = this.playerRepository.findById(playerId2);
@@ -47,8 +48,8 @@ class RoomHandler {
     player1?.ws ? this.messenger.sendMessage(player1.ws, {
       type: 'create_game',
       data: {
-        gameId: game.id,
-        playerId: playerId1,
+        idGame: game.id,
+        idPlayer: playerId1,
       },
       id: 0,
     }) : null;
@@ -56,8 +57,8 @@ class RoomHandler {
     player2?.ws ? this.messenger.sendMessage(player2.ws, {
       type: 'create_game',
       data: {
-        gameId: game.id,
-        playerId: playerId2,
+        idGame: game.id,
+        idPlayer: playerId2,
       },
       id: 0,
     }) : null;

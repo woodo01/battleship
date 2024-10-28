@@ -22,11 +22,9 @@ class MessageHandler {
   botHandler = new BotHandler(this.roomRepository, this.playerRepository, this.gameService);
 
   handleMessage(ws: WebSocket, message: string, clientId: string) {
-    const msg: IMessage = JSON.parse(message);
-    const { type, data } = msg;
-
     try {
       const msg: IMessage = JSON.parse(message);
+      const { type, data } = msg;
       switch (type) {
         case MESSAGE_TYPES.REGISTRATION:
           this.registrationHandler.handle(ws, data, clientId);
