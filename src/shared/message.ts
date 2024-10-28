@@ -9,8 +9,34 @@ enum MESSAGE_TYPES {
 
 export { MESSAGE_TYPES};
 
+export interface IMessageData {
+  userName: string,
+  clientId: string,
+  error: boolean,
+  errorText: string,
+}
+
 export interface IMessage {
   type: string;
-  data: string;
+  data: IMessageData;
   id: number;
 }
+
+export const createMessageData = (overrides: Partial<IMessageData> = {}): IMessageData => {
+  return {
+    userName: 'Guest',
+    clientId: '',
+    error: false,
+    errorText: '',
+    ...overrides,
+  };
+};
+
+export const createMessage = (overrides: Partial<IMessage> = {}): IMessage => {
+  return {
+    type: 'defaultType',
+    data: createMessageData(overrides.data),
+    id: 0,
+    ...overrides,
+  };
+};

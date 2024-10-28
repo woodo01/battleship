@@ -13,7 +13,7 @@ class WSServer {
       console.log(`Client connected: ${clientId}`);
 
       ws.on('message', (message: string) => {
-        this.messageHandler.handleMessage(ws, message);
+        this.messageHandler.handleMessage(ws, message, clientId);
         console.log(`Received message from ${clientId}: ${message}`);
       });
 
