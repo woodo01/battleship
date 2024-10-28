@@ -27,8 +27,10 @@ class PlayerRepository {
     return this.players.get(clientId);
   }
 
-  addPlayer(userName: string, password: string, clientId: string, ws: WebSocket) {
-    this.players.set(clientId, new Player(userName, password, clientId, ws));
+  addPlayer(userName: string, password: string, clientId: string, ws: WebSocket|null) {
+    const player = new Player(userName, password, clientId, ws);
+    this.players.set(clientId, player);
+    return player;
   }
 
   findAll() {

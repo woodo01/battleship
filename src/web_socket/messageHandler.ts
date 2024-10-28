@@ -8,6 +8,7 @@ import { RoomRepository } from "../storage/roomRepository";
 import GameService from "../shared/gameService";
 import { GameRepository } from "../storage/gameRepository";
 import GameHandler from "../handlers/gameHandler";
+import { BotHandler } from "../handlers/botHandler";
 
 class MessageHandler {
   messenger = new Messenger();
@@ -18,6 +19,7 @@ class MessageHandler {
   gameService = new GameService(this.gameRepository);
   gameHandler = new GameHandler(this.gameRepository, this.playerRepository);
   roomHandler = new RoomHandler(this.roomRepository, this.playerRepository, this.gameService);
+  botHandler = new BotHandler(this.roomRepository, this.playerRepository, this.gameService);
 
   handleMessage(ws: WebSocket, message: string, clientId: string) {
     const msg: IMessage = JSON.parse(message);
@@ -30,6 +32,7 @@ class MessageHandler {
           this.registrationHandler.handle(ws, data, clientId);
           break;
         case MESSAGE_TYPES.SINGLE_PLAY:
+          this.botHandler.handleSinglePlay(ws, clientId);
           break;
         case MESSAGE_TYPES.CREATE_ROOM:
           this.roomHandler.createRoom(clientId);

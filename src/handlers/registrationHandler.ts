@@ -4,8 +4,8 @@ import { Messenger } from "../shared/messenger";
 import { createMessage, MESSAGE_TYPES } from "../shared/message";
 
 class RegistrationHandler {
-  playerRepository: PlayerRepository;
   messenger = new Messenger();
+  playerRepository: PlayerRepository;
 
   constructor(playerRepository: PlayerRepository) {
     this.playerRepository = playerRepository;
