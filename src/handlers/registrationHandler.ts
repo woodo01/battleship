@@ -2,6 +2,7 @@ import { WebSocket } from "ws";
 import { Player, PlayerRepository } from "../storage/playerRepository";
 import { Messenger } from "../shared/messenger";
 import { createMessage, MESSAGE_TYPES } from "../shared/message";
+import { WSServer } from "../web_socket/server";
 
 class RegistrationHandler {
   messenger = new Messenger();
@@ -18,10 +19,20 @@ class RegistrationHandler {
 
   handle(ws: WebSocket, data: any, clientId: string) {
     const { name: userName, password } = JSON.parse(data);
+    console.log("handleRegistration", userName, password, data, this.playerRepository.findAll());
     let player = this.playerRepository.findByName(userName);
 
     if (!player) {
       this.playerRepository.addPlayer(userName, password, clientId, ws);
+      this.messenger.sendMessage(ws, createMessage({
+        type: MESSAGE_TYPES.REGISTRATION,
+        data: {
+          userName,
+          clientId,
+          error: false,
+          errorText: "",
+        },
+      }));
       return;
     }
 
@@ -33,6 +44,19 @@ class RegistrationHandler {
           clientId,
           error: true,
           errorText: "Invalid password",
+        },
+      }));
+      return;
+    }
+
+    if (WSServer.clients.has(player.clientId)) {
+      this.messenger.sendMessage(ws, createMessage({
+        type: MESSAGE_TYPES.REGISTRATION,
+        data: {
+          userName,
+          clientId,
+          error: true,
+          errorText: "Already logged in",
         },
       }));
       return;

@@ -4,12 +4,13 @@ import { MessageHandler } from "./messageHandler";
 
 class WSServer {
   private messageHandler = new MessageHandler();
+  public static clients = new Map<string, WebSocket>();
+  public static connectionCounter = 0;
 
   startServer(port: number) {
     (new WebSocketServer({ port })).on('connection', (ws: WebSocket, req: IncomingMessage) => {
-      const clients = new Map<string, WebSocket>();
-      const clientId = (clients.size + 1).toString();
-      clients.set(clientId, ws);
+      const clientId = (WSServer.connectionCounter++).toString();
+      WSServer.clients.set(clientId, ws);
       console.log(`Client connected: ${clientId}`);
 
       ws.on('message', (message: string) => {
@@ -18,7 +19,7 @@ class WSServer {
       });
 
       ws.on('close', () => {
-        clients.delete(clientId);
+        WSServer.clients.delete(clientId);
         console.log(`Client disconnected: ${clientId}`);
       });
     });
