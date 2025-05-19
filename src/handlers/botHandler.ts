@@ -5,6 +5,7 @@ import { Game, PlayerInfo, ShipInfo } from "../storage/gameRepository";
 import { Room, RoomRepository } from "../storage/roomRepository";
 import GameService from "../shared/gameService";
 import ShipService from "../shared/shipService";
+import { MessageHandler } from "../web_socket/messageHandler";
 
 class BotHandler {
   botIdCounter = 0;
@@ -13,11 +14,13 @@ class BotHandler {
   roomRepository: RoomRepository;
   playerRepository: PlayerRepository;
   gameService: GameService;
+  messageHandler: MessageHandler;
 
-  constructor(roomRepository: RoomRepository, playerRepository: PlayerRepository, gameService: GameService) {
+  constructor(roomRepository: RoomRepository, playerRepository: PlayerRepository, gameService: GameService, messageHandler: MessageHandler) {
     this.playerRepository = playerRepository;
     this.roomRepository = roomRepository;
     this.gameService = gameService;
+    this.messageHandler = messageHandler;
   }
 
   handleSinglePlay(ws: WebSocket, clientId: string) {
@@ -122,6 +125,7 @@ class BotHandler {
     const result = this.processAttack(game, botClientId, x, y);
 
     const humanPlayer = this.playerRepository.findById(opponentId);
+    console.log("Human player", humanPlayer);
     if (humanPlayer && humanPlayer.ws) {
       this.messenger.sendMessage(humanPlayer.ws, {
         type: 'attack',
@@ -149,7 +153,11 @@ class BotHandler {
     }
 
     this.messenger.sendTurnMessage(game, this.playerRepository);
-    setTimeout(() => this.botMakeMove(game, game.currentTurn), 1000);
+    if (game.currentTurn === botClientId) {
+      setTimeout(() => this.botMakeMove(game, game.currentTurn), 1000);
+    } else {
+      this.messageHandler.gameHandler.setTurnTimer(game);
+    }
   }
 
   generateCoordinatesForAttack(data: PlayerInfo): { x: number; y: number } {

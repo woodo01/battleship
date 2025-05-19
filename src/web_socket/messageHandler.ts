@@ -17,9 +17,9 @@ class MessageHandler {
   gameRepository = new GameRepository();
   registrationHandler = new RegistrationHandler(this.playerRepository);
   gameService = new GameService(this.gameRepository);
-  gameHandler = new GameHandler(this.gameRepository, this.playerRepository);
+  gameHandler = new GameHandler(this.gameRepository, this.playerRepository, this);
   roomHandler = new RoomHandler(this.roomRepository, this.playerRepository, this.gameService);
-  botHandler = new BotHandler(this.roomRepository, this.playerRepository, this.gameService);
+  botHandler = new BotHandler(this.roomRepository, this.playerRepository, this.gameService, this);
 
   handleMessage(ws: WebSocket, message: string, clientId: string) {
     try {

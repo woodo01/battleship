@@ -3,6 +3,7 @@ import { Game, GameRepository } from "../storage/gameRepository";
 import { Messenger } from "../shared/messenger";
 import { Player, PlayerRepository } from "../storage/playerRepository";
 import ShipService from "../shared/shipService";
+import { MessageHandler } from "../web_socket/messageHandler";
 
 class GameHandler {
   timers = new Map<string, NodeJS.Timeout>();
@@ -11,10 +12,12 @@ class GameHandler {
   messenger = new Messenger();
   gameRepository: GameRepository;
   playerRepository: PlayerRepository;
+  messageHandler: MessageHandler;
 
-  constructor(gameRepository: GameRepository, playerRepository: PlayerRepository) {
+  constructor(gameRepository: GameRepository, playerRepository: PlayerRepository, messageHandler: MessageHandler) {
     this.gameRepository = gameRepository;
     this.playerRepository = playerRepository;
+    this.messageHandler = messageHandler;
   }
 
   handleAddShips(ws: WebSocket, data: any) {
@@ -34,6 +37,10 @@ class GameHandler {
     }
     this.messenger.sendStartGameMessage(game, this.playerRepository);
     this.messenger.sendTurnMessage(game, this.playerRepository);
+    if (game.currentTurn.startsWith(`bot-`)) {
+      this.messageHandler.botHandler.botMakeMove(game, game.currentTurn);
+      return;
+    }
     this.setTurnTimer(game);
   }
 
@@ -160,6 +167,10 @@ class GameHandler {
       game.currentTurn = opponentId;
     }
     this.messenger.sendTurnMessage(game, this.playerRepository);
+    if (game.currentTurn.startsWith(`bot-`)) {
+      this.messageHandler.botHandler.botMakeMove(game, game.currentTurn);
+      return;
+    }
     this.setTurnTimer(game);
   }
 }
